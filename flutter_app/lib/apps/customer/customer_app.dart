@@ -22,7 +22,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
     final state = context.watch<AppState>();
 
     return Scaffold(
-      backgroundColor: AppColors.surface50,
+      backgroundColor: AppColors.surface100,
       appBar: _buildAppBar(context, state),
       body: Stack(
         children: [
@@ -36,7 +36,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
             ],
           ),
 
-          // Floating Thumb-Zone Tray Button
+          // Floating Thumb-Zone Tray Button (Fitts's Law)
           if (state.trayCount > 0 && _currentTabIndex == 0)
             Positioned(
               left: 16,
@@ -46,7 +46,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
             ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNav(context, state),
+      bottomNavigationBar: _buildBrandedBottomNav(context),
     );
   }
 
@@ -54,87 +54,112 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
     return AppBar(
       backgroundColor: AppColors.surface950,
       elevation: 0,
+      toolbarHeight: 56,
       title: Row(
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: 34,
+            height: 34,
             decoration: BoxDecoration(
               color: AppColors.brand700,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.brand700.withOpacity(0.5),
+                  blurRadius: 8,
+                ),
+              ],
             ),
             child: const Center(
               child: Text(
                 'KR',
-                style: TextStyle(fontWeight: FontWeight.w900, color: Colors.white, fontSize: 13),
+                style: TextStyle(fontWeight: FontWeight.w900, color: Colors.white, fontSize: 14),
               ),
             ),
           ),
           const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    'KRAVE Burgers',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                    decoration: BoxDecoration(
-                      color: AppColors.brand700,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      'DIRECT',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 8,
-                        fontWeight: FontWeight.w800,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'KRAVE Burgers',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
                         color: Colors.white,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              InkWell(
-                onTap: () => _showBranchSelector(context, state),
-                child: Row(
-                  children: [
-                    Text(
-                      '${state.currentBranch.name} • ',
-                      style: GoogleFonts.plusJakartaSans(fontSize: 10, color: AppColors.surface400),
-                    ),
-                    Text(
-                      'Open Now',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.emerald400,
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                      decoration: BoxDecoration(
+                        color: AppColors.brand700,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'DIRECT',
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                    const Icon(Icons.arrow_drop_down, color: AppColors.surface400, size: 14),
                   ],
                 ),
-              ),
-            ],
+                InkWell(
+                  onTap: () => _showBranchSelector(context, state),
+                  child: Row(
+                    children: [
+                      Text(
+                        '${state.currentBranch.name} • ',
+                        style: GoogleFonts.plusJakartaSans(fontSize: 10, color: AppColors.surface300),
+                      ),
+                      Text(
+                        'Open Now',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.emerald400,
+                        ),
+                      ),
+                      const Icon(Icons.arrow_drop_down, color: AppColors.surface400, size: 14),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => state.toggleLanguage(),
-          child: Text(
-            state.isUrdu() ? 'English' : 'اردو',
-            style: GoogleFonts.notoNastaliqUrdu(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
+        Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: TextButton(
+            onPressed: () => state.toggleLanguage(),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              minimumSize: Size.zero,
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: AppColors.surface900,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.surface800),
+              ),
+              child: Text(
+                state.isUrdu() ? 'English' : 'اردو',
+                style: GoogleFonts.notoNastaliqUrdu(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
         ),
@@ -152,7 +177,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
     }).toList();
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: 90),
+      padding: const EdgeInsets.only(bottom: 96),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -164,23 +189,28 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
 
           // Search Bar
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: TextField(
-              onChanged: (val) => setState(() => _searchQuery = val),
-              decoration: InputDecoration(
-                hintText: 'Search burgers, loaded fries, shakes...',
-                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.surface400),
-                prefixIcon: const Icon(Icons.search, size: 18, color: AppColors.surface500),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: AppColors.surface200),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: AppColors.surface200),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                onChanged: (val) => setState(() => _searchQuery = val),
+                style: const TextStyle(fontSize: 13, color: AppColors.surface900),
+                decoration: InputDecoration(
+                  hintText: 'Search burgers, loaded fries, shakes...',
+                  hintStyle: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.surface400),
+                  prefixIcon: const Icon(Icons.search, size: 20, color: AppColors.surface500),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 ),
               ),
             ),
@@ -193,9 +223,31 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
           if (state.activeInFlightOrderId != null)
             _buildInFlightOrderBanner(context, state),
 
+          // Section Title
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _getCategorySectionTitle(_selectedCategory),
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.surface900,
+                  ),
+                ),
+                Text(
+                  '${filtered.length} items',
+                  style: GoogleFonts.jetBrainsMono(fontSize: 10, color: AppColors.surface500),
+                ),
+              ],
+            ),
+          ),
+
           // Menu Catalog List
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Column(
               children: filtered.map((item) => _buildMenuItemCard(context, state, item)).toList(),
             ),
@@ -205,10 +257,23 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
     );
   }
 
+  String _getCategorySectionTitle(String cat) {
+    switch (cat) {
+      case 'burgers':
+        return '🍔 Artisanal Smash Burgers';
+      case 'combos':
+        return '🍟 Loaded Fries & Combos';
+      case 'shakes':
+        return '🥤 Handspun Thick Shakes';
+      default:
+        return '🔥 All Menu Dishes';
+    }
+  }
+
   Widget _buildHeroBanner(BuildContext context, AppState state) {
     return Container(
       color: AppColors.surface950,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Column(
         children: [
           Row(
@@ -219,13 +284,13 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                       decoration: BoxDecoration(
                         color: AppColors.brand700,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'SAVE 15% VS AGGREGATORS',
+                        'DIRECT KITCHEN • SAVE 15%',
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 9,
                           fontWeight: FontWeight.w800,
@@ -248,7 +313,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                         const Icon(Icons.star, color: AppColors.amber400, size: 14),
                         const SizedBox(width: 4),
                         Text(
-                          '4.9 (480+ reviews) • ${state.currentBranch.etaRange} mins • PKR ${state.currentBranch.deliveryFee} Deliv',
+                          '4.9 (480+) • ${state.currentBranch.etaRange}m • PKR ${state.currentBranch.deliveryFee} Deliv',
                           style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.surface300),
                         ),
                       ],
@@ -256,13 +321,13 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                   ],
                 ),
               ),
+              const SizedBox(width: 12),
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
+                borderRadius: BorderRadius.circular(14),
+                child: _buildNetworkImage(
                   'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=160&auto=format&fit=crop&q=80',
-                  width: 58,
-                  height: 58,
-                  fit: BoxFit.cover,
+                  width: 60,
+                  height: 60,
                 ),
               ),
             ],
@@ -274,7 +339,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               color: AppColors.surface900,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.surface800),
             ),
             child: Row(
@@ -282,18 +347,28 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () => state.setFulfillmentMode('delivery'),
+                    borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 9),
                       decoration: BoxDecoration(
                         color: state.fulfillmentMode == 'delivery' ? AppColors.brand700 : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: state.fulfillmentMode == 'delivery'
+                            ? [
+                                BoxShadow(
+                                  color: AppColors.brand700.withOpacity(0.4),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
                       ),
                       child: Center(
                         child: Text(
                           '🛵 Delivery (${state.currentBranch.etaRange}m)',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 11,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w800,
                             color: Colors.white,
                           ),
                         ),
@@ -304,19 +379,20 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () => state.setFulfillmentMode('pickup'),
+                    borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 9),
                       decoration: BoxDecoration(
                         color: state.fulfillmentMode == 'pickup' ? AppColors.brand700 : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
                         child: Text(
                           '🛍️ Takeaway (15m)',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            color: state.fulfillmentMode == 'pickup' ? Colors.white : AppColors.surface400,
                           ),
                         ),
                       ),
@@ -338,18 +414,27 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 16, top: 14, bottom: 8),
-          child: Text(
-            '🔥 Chef Recommended',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: AppColors.surface900,
-            ),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '🔥 Chef Recommended',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.surface900,
+                ),
+              ),
+              Text(
+                'Swipe for more →',
+                style: GoogleFonts.plusJakartaSans(fontSize: 10, color: AppColors.surface500),
+              ),
+            ],
           ),
         ),
         SizedBox(
-          height: 175,
+          height: 195,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             scrollDirection: Axis.horizontal,
@@ -358,29 +443,28 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
             itemBuilder: (context, index) {
               final item = featuredItems[index];
               return Container(
-                width: 210,
+                width: 215,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: AppColors.surface200),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6, offset: const Offset(0, 3)),
+                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 3)),
                   ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                      child: Image.network(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                      child: _buildNetworkImage(
                         item.imageUrl,
-                        height: 95,
+                        height: 105,
                         width: double.infinity,
-                        fit: BoxFit.cover,
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -388,31 +472,36 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                             item.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.surface900,
+                            ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 6),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 'PKR ${item.price}',
                                 style: GoogleFonts.jetBrainsMono(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w800,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900,
                                   color: AppColors.brand700,
                                 ),
                               ),
                               InkWell(
                                 onTap: () => _openCustomizer(context, state, item),
+                                borderRadius: BorderRadius.circular(8),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                                   decoration: BoxDecoration(
                                     color: AppColors.brand700,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: const Text(
                                     '+ Add',
-                                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                    style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ),
@@ -454,13 +543,17 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
               cat['label']!,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w800,
                 color: isSelected ? Colors.white : AppColors.surface700,
               ),
             ),
             selected: isSelected,
             selectedColor: AppColors.surface900,
-            backgroundColor: AppColors.surface100,
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: isSelected ? AppColors.surface900 : AppColors.surface200),
+            ),
             onSelected: (_) => setState(() => _selectedCategory = cat['id']!),
           );
         },
@@ -470,7 +563,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
 
   Widget _buildInFlightOrderBanner(BuildContext context, AppState state) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFFECFDF5),
@@ -492,11 +585,11 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Order #${state.activeInFlightOrderId}: Kitchen Active',
+                    'Order #${state.activeInFlightOrderId}: Active Prep',
                     style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w800, color: const Color(0xFF064E3B)),
                   ),
                   Text(
-                    'Tap to view live animated tracking',
+                    'Tap to view live delivery telemetry',
                     style: GoogleFonts.plusJakartaSans(fontSize: 10, color: const Color(0xFF047857)),
                   ),
                 ],
@@ -518,19 +611,21 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.surface200),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2)),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
+            borderRadius: BorderRadius.circular(14),
+            child: _buildNetworkImage(
               item.imageUrl,
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
+              width: 88,
+              height: 88,
             ),
           ),
           const SizedBox(width: 12),
@@ -540,14 +635,22 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
               children: [
                 Text(
                   state.isUrdu() ? item.titleUrdu : item.title,
-                  style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800),
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.surface900,
+                  ),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   item.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.plusJakartaSans(fontSize: 10, color: AppColors.surface500),
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10.5,
+                    color: AppColors.surface600,
+                    height: 1.3,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -556,22 +659,37 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                     Text(
                       'PKR ${item.price}',
                       style: GoogleFonts.jetBrainsMono(
-                        fontSize: 13,
+                        fontSize: 13.5,
                         fontWeight: FontWeight.w900,
                         color: AppColors.brand700,
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: item.isSoldOut ? null : () => _openCustomizer(context, state, item),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.brand700,
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: Text(
-                        item.isSoldOut ? 'Sold Out' : '+ Add',
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                    InkWell(
+                      onTap: item.isSoldOut ? null : () => _openCustomizer(context, state, item),
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: item.isSoldOut ? AppColors.surface300 : AppColors.brand700,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: item.isSoldOut
+                              ? null
+                              : [
+                                  BoxShadow(
+                                    color: AppColors.brand700.withOpacity(0.35),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                        ),
+                        child: Text(
+                          item.isSoldOut ? 'Sold Out' : '+ Add',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -584,19 +702,57 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
     );
   }
 
+  Widget _buildNetworkImage(String url, {double? width, double? height}) {
+    return Image.network(
+      url,
+      width: width,
+      height: height,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Container(
+          width: width,
+          height: height,
+          color: AppColors.surface200,
+          child: const Center(
+            child: SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.brand700),
+            ),
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: AppColors.surface900,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Center(
+            child: Icon(Icons.fastfood, color: AppColors.amber400, size: 28),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildFloatingTrayBar(BuildContext context, AppState state) {
     return InkWell(
       onTap: () => _openTrayDrawer(context, state),
+      borderRadius: BorderRadius.circular(18),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
         decoration: BoxDecoration(
           color: AppColors.brand700,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
-              color: AppColors.brand700.withOpacity(0.4),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
+              color: AppColors.brand700.withOpacity(0.45),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
@@ -723,7 +879,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                   children: [
                     Text(
                       'Burger Loyalty Stamp Card',
-                      style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800),
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.surface900),
                     ),
                     Text(
                       '${state.stampCount}/5 STAMPS',
@@ -768,7 +924,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
           // Loyalty Transaction Ledger
           Text(
             'Cashback History',
-            style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800),
+            style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.surface900),
           ),
           const SizedBox(height: 8),
           ...state.loyaltyLog.map(
@@ -786,7 +942,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(log.description, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700)),
+                      Text(log.description, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.surface900)),
                       Text(log.date, style: GoogleFonts.plusJakartaSans(fontSize: 9, color: AppColors.surface500)),
                     ],
                   ),
@@ -831,7 +987,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Order #${activeOrder.id}', style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w900)),
+                    Text('Order #${activeOrder.id}', style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.surface900)),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(color: const Color(0xFFECFDF5), borderRadius: BorderRadius.circular(8)),
@@ -883,7 +1039,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Tariq Khan (Direct Rider)', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w800)),
+                          Text('Tariq Khan (Direct Rider)', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.surface900)),
                           Text('Suzuki GS150 • 4.9★', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: AppColors.surface500)),
                         ],
                       ),
@@ -956,7 +1112,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
               children: [
                 const Icon(Icons.chat_bubble_outline, size: 36, color: AppColors.emerald600),
                 const SizedBox(height: 12),
-                Text('Direct Kitchen Manager Hotline', style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w800)),
+                Text('Direct Kitchen Manager Hotline', style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.surface900)),
                 const SizedBox(height: 6),
                 Text(
                   'No automated bot scripts. Speak directly with the duty manager at DHA Phase 5 on WhatsApp.',
@@ -982,16 +1138,59 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
     );
   }
 
-  Widget _buildBottomNav(BuildContext context, AppState state) {
-    return NavigationBar(
-      selectedIndex: _currentTabIndex,
-      onDestinationSelected: (idx) => setState(() => _currentTabIndex = idx),
-      destinations: const [
-        NavigationDestination(icon: Icon(Icons.restaurant_menu), label: 'Menu'),
-        NavigationDestination(icon: Icon(Icons.wallet_giftcard), label: 'Rewards'),
-        NavigationDestination(icon: Icon(Icons.navigation), label: 'Track'),
-        NavigationDestination(icon: Icon(Icons.support_agent), label: 'Support'),
-      ],
+  Widget _buildBrandedBottomNav(BuildContext context) {
+    final navItems = [
+      {'icon': Icons.restaurant_menu, 'label': 'Menu'},
+      {'icon': Icons.wallet_giftcard, 'label': 'Rewards'},
+      {'icon': Icons.navigation, 'label': 'Track'},
+      {'icon': Icons.support_agent, 'label': 'WhatsApp'},
+    ];
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: const Border(top: BorderSide(color: AppColors.surface200)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, -2)),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(navItems.length, (idx) {
+              final isSelected = _currentTabIndex == idx;
+              return InkWell(
+                onTap: () => setState(() => _currentTabIndex = idx),
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        navItems[idx]['icon'] as IconData,
+                        size: 22,
+                        color: isSelected ? AppColors.brand700 : AppColors.surface400,
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        navItems[idx]['label'] as String,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10,
+                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                          color: isSelected ? AppColors.brand700 : AppColors.surface400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+      ),
     );
   }
 
@@ -1050,7 +1249,7 @@ class _CustomizerSheetState extends State<_CustomizerSheet> {
   int _qty = 1;
   String _selectedPatty = 'Single Smash (100g)';
   int _pattyPriceDelta = 0;
-  String _selectedBun = 'Brioche Bun';
+  final String _selectedBun = 'Brioche Bun';
   late String _selectedSauce;
   final List<String> _selectedAddons = [];
   bool _isCombo = false;
@@ -1084,21 +1283,39 @@ class _CustomizerSheetState extends State<_CustomizerSheet> {
       ),
       child: Column(
         children: [
+          // Drag Handle
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 8, bottom: 8),
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(color: AppColors.surface300, borderRadius: BorderRadius.circular(2)),
+            ),
+          ),
           // Header Picture
           ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            child: Image.network(widget.item.imageUrl, height: 160, width: double.infinity, fit: BoxFit.cover),
+            child: Image.network(
+              widget.item.imageUrl,
+              height: 150,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                height: 150,
+                color: AppColors.surface900,
+                child: const Center(child: Icon(Icons.fastfood, color: AppColors.amber400, size: 40)),
+              ),
+            ),
           ),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text(widget.item.title, style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800)),
-                Text(widget.item.description, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.surface500)),
+                Text(widget.item.title, style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.surface900)),
+                Text(widget.item.description, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.surface600)),
                 const Divider(height: 24),
 
                 // Patty option
-                Text('1. Patty Configuration', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13)),
+                Text('1. Patty Configuration (Required)', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.surface900)),
                 RadioListTile<String>(
                   title: const Text('Single Smash (100g)'),
                   value: 'Single Smash (100g)',
@@ -1122,13 +1339,18 @@ class _CustomizerSheetState extends State<_CustomizerSheet> {
 
                 // Sauce selection
                 if (widget.item.availableSauces.isNotEmpty) ...[
-                  Text('2. Signature Sauce', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13)),
+                  Text('2. Signature Sauce (Required)', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.surface900)),
+                  const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
+                    runSpacing: 8,
                     children: widget.item.availableSauces.map((sauce) {
+                      final isSelected = _selectedSauce == sauce;
                       return ChoiceChip(
-                        label: Text(sauce),
-                        selected: _selectedSauce == sauce,
+                        label: Text(sauce, style: TextStyle(color: isSelected ? Colors.white : AppColors.surface800, fontWeight: FontWeight.w700, fontSize: 11)),
+                        selected: isSelected,
+                        selectedColor: AppColors.brand700,
+                        backgroundColor: AppColors.surface100,
                         onSelected: (_) => setState(() => _selectedSauce = sauce),
                       );
                     }).toList(),
@@ -1138,9 +1360,10 @@ class _CustomizerSheetState extends State<_CustomizerSheet> {
 
                 // Combo Upgrade
                 SwitchListTile(
-                  title: const Text('🍟 Make it a Combo (+PKR 350)'),
-                  subtitle: const Text('Includes Medium Fries + Gourmet Cola'),
+                  title: const Text('🍟 Make it a Combo (+PKR 350)', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+                  subtitle: const Text('Includes Medium Golden Fries + Gourmet Cola', style: TextStyle(fontSize: 11)),
                   value: _isCombo,
+                  activeColor: AppColors.brand700,
                   onChanged: (v) => setState(() => _isCombo = v),
                 ),
               ],
@@ -1163,6 +1386,11 @@ class _CustomizerSheetState extends State<_CustomizerSheet> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.brand700,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
                     onPressed: () {
                       state.addToTray(
                         CartItem(
@@ -1179,7 +1407,10 @@ class _CustomizerSheetState extends State<_CustomizerSheet> {
                       );
                       Navigator.of(context).pop();
                     },
-                    child: Text('Add to Tray • PKR $_calculatedPrice'),
+                    child: Text(
+                      'Add to Tray • PKR $_calculatedPrice',
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -1200,7 +1431,7 @@ class _TrayDrawerSheet extends StatelessWidget {
     final state = context.watch<AppState>();
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.75,
+      height: MediaQuery.of(context).size.height * 0.78,
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -1212,39 +1443,41 @@ class _TrayDrawerSheet extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Your Order Tray', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800)),
+                Text('Your Order Tray', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.surface900)),
                 IconButton(onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.close)),
               ],
             ),
           ),
           const Divider(height: 1),
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: state.tray.length,
-              separatorBuilder: (_, __) => const Divider(),
-              itemBuilder: (context, i) {
-                final item = state.tray[i];
-                return Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            child: state.tray.isEmpty
+                ? const Center(child: Text('Your tray is empty.'))
+                : ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: state.tray.length,
+                    separatorBuilder: (_, __) => const Divider(),
+                    itemBuilder: (context, i) {
+                      final item = state.tray[i];
+                      return Row(
                         children: [
-                          Text(item.item.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          Text('${item.selectedPatty} • ${item.selectedSauce}', style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                          Text('PKR ${item.totalItemPrice}', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.brand700)),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(item.item.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+                                Text('${item.selectedPatty} • ${item.selectedSauce}', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                                Text('PKR ${item.totalItemPrice}', style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.brand700)),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline, color: Colors.red),
+                            onPressed: () => state.removeFromTray(i),
+                          ),
                         ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      onPressed: () => state.removeFromTray(i),
-                    ),
-                  ],
-                );
-              },
-            ),
+                      );
+                    },
+                  ),
           ),
           Container(
             padding: const EdgeInsets.all(16),
@@ -1254,26 +1487,35 @@ class _TrayDrawerSheet extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Total Payable:'),
-                    Text('PKR ${state.finalPayable}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const Text('Total Payable:', style: TextStyle(fontWeight: FontWeight.w700)),
+                    Text('PKR ${state.finalPayable}', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17, color: AppColors.brand700)),
                   ],
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-                  onPressed: () {
-                    final orderId = state.placeOrder(
-                      name: 'Zaid Ahmed',
-                      phone: '0300-8291042',
-                      address: 'House 42-B, DHA Phase 5',
-                      paymentMethod: 'COD',
-                    );
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Order #$orderId placed successfully! Direct Cashback credited.')),
-                    );
-                  },
-                  child: const Text('Authorize & Place Direct Order'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.brand700,
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: state.tray.isEmpty
+                      ? null
+                      : () {
+                          final orderId = state.placeOrder(
+                            name: 'Zaid Ahmed',
+                            phone: '0300-8291042',
+                            address: 'House 42-B, DHA Phase 5',
+                            paymentMethod: 'COD',
+                          );
+                          Navigator.of(context).pop();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: AppColors.emerald600,
+                              content: Text('Order #$orderId placed successfully! 5% Direct Cashback credited.'),
+                            ),
+                          );
+                        },
+                  child: const Text('Authorize & Place Direct Order', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.white)),
                 ),
               ],
             ),

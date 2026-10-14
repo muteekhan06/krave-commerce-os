@@ -48,13 +48,21 @@ jobs:
       - name: ⚙️ Verify Flutter Environment
         run: flutter doctor -v
 
-      - name: 🛠️ Initialize Android Platform Files
+      - name: 🛠️ Initialize Android Platform Files & Permissions
         working-directory: ./flutter_app
         run: |
-          if [ ! -d "android" ]; then
-            echo "Generating Android scaffold..."
-            flutter create . --org pk.krave --platforms=android
-          fi
+          echo "Generating Android scaffold..."
+          flutter create . --org pk.krave --platforms=android
+          python3 -c "
+          p = 'android/app/src/main/AndroidManifest.xml'
+          with open(p, 'r') as f:
+              c = f.read()
+          if 'android.permission.INTERNET' not in c:
+              c = c.replace('<application', '<uses-permission android:name=\"android.permission.INTERNET\"/>\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>\n    <application')
+              with open(p, 'w') as f:
+                  f.write(c)
+              print('Successfully injected INTERNET and ACCESS_NETWORK_STATE permissions into AndroidManifest.xml')
+          "
 
       - name: 📦 Install Flutter Dependencies
         working-directory: ./flutter_app
