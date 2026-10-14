@@ -5,6 +5,7 @@ class AppColors {
   // Brand Reds
   static const Color brand50 = Color(0xFFFEF2F2);
   static const Color brand100 = Color(0xFFFEE2E2);
+  static const Color brand400 = Color(0xFFF87171);
   static const Color brand500 = Color(0xFFEF4444);
   static const Color brand600 = Color(0xFFDC2626);
   static const Color brand700 = Color(0xFFB91C1C);
