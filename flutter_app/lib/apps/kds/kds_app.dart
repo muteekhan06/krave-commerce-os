@@ -180,7 +180,7 @@ class KdsAppScreen extends StatelessWidget {
           children: [
             // Top ticket bar
             Row(
-              mainAxisAlignment: MainAxisAlignment.between,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
@@ -220,7 +220,7 @@ class KdsAppScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.between,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('${it.quantity}x ${it.title}', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.white)),
                         Text('PKR ${it.price * it.quantity}', style: GoogleFonts.jetBrainsMono(fontSize: 11, color: AppColors.surface400)),
@@ -243,7 +243,7 @@ class KdsAppScreen extends StatelessWidget {
 
             // Customer info & actions
             Row(
-              mainAxisAlignment: MainAxisAlignment.between,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

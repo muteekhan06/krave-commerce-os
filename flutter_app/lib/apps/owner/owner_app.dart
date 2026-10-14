@@ -114,7 +114,7 @@ class OwnerAppScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Hourly Order Velocity', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.white)),
                       Text('Peak: 1pm & 8pm', style: GoogleFonts.jetBrainsMono(fontSize: 10, color: AppColors.amber400)),

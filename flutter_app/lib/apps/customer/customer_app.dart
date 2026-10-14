@@ -392,7 +392,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                           ),
                           const SizedBox(height: 4),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.between,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 'PKR ${item.price}',
@@ -551,7 +551,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                 ),
                 const SizedBox(height: 8),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'PKR ${item.price}',
@@ -601,7 +601,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
           ],
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.between,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
@@ -674,7 +674,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'KRAVE DINEPASS WALLET',
@@ -719,7 +719,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Burger Loyalty Stamp Card',
@@ -781,7 +781,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                 border: Border.all(color: AppColors.surface200),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.between,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -829,7 +829,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Order #${activeOrder.id}', style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w900)),
                     Container(
@@ -1210,7 +1210,7 @@ class _TrayDrawerSheet extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.between,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Your Order Tray', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800)),
                 IconButton(onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.close)),
@@ -1252,7 +1252,7 @@ class _TrayDrawerSheet extends StatelessWidget {
             child: Column(
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('Total Payable:'),
                     Text('PKR ${state.finalPayable}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
