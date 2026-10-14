@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/models/models.dart';
 import '../../core/state/app_state.dart';
 import '../../core/theme/app_theme.dart';
+import 'pages/product_detail_page.dart';
+import 'widgets/krave_toast.dart';
+import '../kds/kds_app.dart';
+import '../rider/rider_app.dart';
+import '../owner/owner_app.dart';
 
 class CustomerAppScreen extends StatefulWidget {
   const CustomerAppScreen({super.key});
@@ -33,6 +40,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
               _buildRewardsTab(context, state),
               _buildTrackTab(context, state),
               _buildSupportTab(context, state),
+              _buildAccountTab(context, state),
             ],
           ),
 
@@ -442,75 +450,82 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final item = featuredItems[index];
-              return Container(
-                width: 215,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: AppColors.surface200),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 3)),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-                      child: _buildNetworkImage(
-                        item.imageUrl,
-                        height: 105,
-                        width: double.infinity,
+              return InkWell(
+                onTap: () => _openProductDetail(context, item),
+                borderRadius: BorderRadius.circular(18),
+                child: Container(
+                  width: 215,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: AppColors.surface200),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 3)),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                        child: Hero(
+                          tag: 'item_img_${item.id}',
+                          child: _buildNetworkImage(
+                            item.imageUrl,
+                            height: 105,
+                            width: double.infinity,
+                          ),
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.surface900,
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.surface900,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'PKR ${item.price}',
-                                style: GoogleFonts.jetBrainsMono(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w900,
-                                  color: AppColors.brand700,
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () => _openCustomizer(context, state, item),
-                                borderRadius: BorderRadius.circular(8),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                                  decoration: BoxDecoration(
+                            const SizedBox(height: 6),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'PKR ${item.price}',
+                                  style: GoogleFonts.jetBrainsMono(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w900,
                                     color: AppColors.brand700,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Text(
-                                    '+ Add',
-                                    style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                                InkWell(
+                                  onTap: () => _openProductDetail(context, item),
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.brand700,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Text(
+                                      '+ Add',
+                                      style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
@@ -606,98 +621,105 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
   }
 
   Widget _buildMenuItemCard(BuildContext context, AppState state, MenuItem item) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.surface200),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2)),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: _buildNetworkImage(
-              item.imageUrl,
-              width: 88,
-              height: 88,
+    return InkWell(
+      onTap: () => _openProductDetail(context, item),
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.surface200),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2)),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: Hero(
+                tag: 'item_img_${item.id}',
+                child: _buildNetworkImage(
+                  item.imageUrl,
+                  width: 88,
+                  height: 88,
+                ),
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  state.isUrdu() ? item.titleUrdu : item.title,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.surface900,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  item.description,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 10.5,
-                    color: AppColors.surface600,
-                    height: 1.3,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'PKR ${item.price}',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.brand700,
-                      ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    state.isUrdu() ? item.titleUrdu : item.title,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.surface900,
                     ),
-                    InkWell(
-                      onTap: item.isSoldOut ? null : () => _openCustomizer(context, state, item),
-                      borderRadius: BorderRadius.circular(10),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                        decoration: BoxDecoration(
-                          color: item.isSoldOut ? AppColors.surface300 : AppColors.brand700,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: item.isSoldOut
-                              ? null
-                              : [
-                                  BoxShadow(
-                                    color: AppColors.brand700.withOpacity(0.35),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    item.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10.5,
+                      color: AppColors.surface600,
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'PKR ${item.price}',
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.brand700,
                         ),
-                        child: Text(
-                          item.isSoldOut ? 'Sold Out' : '+ Add',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
+                      ),
+                      InkWell(
+                        onTap: item.isSoldOut ? null : () => _openProductDetail(context, item),
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: item.isSoldOut ? AppColors.surface300 : AppColors.brand700,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: item.isSoldOut
+                                ? null
+                                : [
+                                    BoxShadow(
+                                      color: AppColors.brand700.withOpacity(0.35),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                          ),
+                          child: Text(
+                            item.isSoldOut ? 'Sold Out' : '+ Add',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1044,14 +1066,91 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                         ],
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Calling direct relay line: 0300-8291042')),
-                        );
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        HapticFeedback.lightImpact();
+                        final Uri url = Uri.parse('tel:03008291042');
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url);
+                        } else {
+                          KraveToast.show(
+                            context,
+                            title: 'Direct Relay Line',
+                            message: 'Dialing Rider Tariq Khan (0300-8291042)...',
+                            type: ToastType.info,
+                          );
+                        }
                       },
-                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.surface900),
-                      child: const Text('Call', style: TextStyle(fontSize: 11)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.surface900,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      ),
+                      icon: const Icon(Icons.phone_in_talk_rounded, size: 14, color: Colors.white),
+                      label: const Text('Call', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Order Action Row: Cancel / WhatsApp Help
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Cancel Order?'),
+                              content: const Text('Your order is currently being prepared. Cancellations within the first 2 minutes are 100% refunded.'),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Keep Order')),
+                                TextButton(
+                                  onPressed: () {
+                                    state.updateOrderStatus(activeOrder.id, OrderStatus.rejected, rejectionReason: 'Cancelled by customer');
+                                    Navigator.of(ctx).pop();
+                                    KraveToast.show(context, message: 'Order #${activeOrder.id} cancelled successfully.', type: ToastType.warning);
+                                  },
+                                  child: const Text('Cancel Order', style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFFE5E7EB)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        child: Text(
+                          'Cancel Order',
+                          style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.surface600),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          HapticFeedback.lightImpact();
+                          final Uri url = Uri.parse('https://wa.me/923008291042?text=Hello%20KRAVE%2C%20inquiry%20for%20order%20%23${activeOrder.id}');
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                          } else {
+                            KraveToast.show(context, message: 'Connecting with WhatsApp desk...', type: ToastType.info);
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF059669),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        icon: const Icon(Icons.chat_rounded, size: 14, color: Colors.white),
+                        label: Text(
+                          'Live Chat',
+                          style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w800, color: Colors.white),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -1121,15 +1220,40 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Opening WhatsApp manager session...')),
-                    );
+                  onPressed: () async {
+                    HapticFeedback.lightImpact();
+                    final Uri url = Uri.parse('https://wa.me/923008291042?text=Hello%20KRAVE%20Kitchen%2C%20I%20have%20an%20inquiry%20regarding%20my%20order.');
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url, mode: LaunchMode.externalApplication);
+                    } else {
+                      KraveToast.show(context, message: 'Opening WhatsApp manager session...', type: ToastType.info);
+                    }
                   },
-                  icon: const Icon(Icons.phone, size: 16),
-                  label: const Text('Open Direct WhatsApp Chat'),
+                  icon: const Icon(Icons.chat_rounded, size: 16, color: Colors.white),
+                  label: const Text('Open Direct WhatsApp Chat', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   style: ElevatedButton.styleFrom(backgroundColor: AppColors.emerald600),
                 ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // FAQ Accordion
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColors.surface200),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Frequently Asked Questions', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.surface900)),
+                const SizedBox(height: 10),
+                _buildFaqItem('Why order directly on KRAVE instead of Foodpanda?', 'We don\'t pay 30% aggregator commissions. That means 15-20% lower prices, faster delivery from dedicated riders, and 5% direct cashback credited to your DinePass on every order.'),
+                _buildFaqItem('What payment methods are supported?', 'We accept Cash on Delivery (COD) and SBP Raast QR P2M Instant Bank Transfer with 0% transaction fee.'),
+                _buildFaqItem('What is your delivery coverage area?', 'We deliver from DHA Phase 5, Clifton Block 5, and Gulshan-e-Iqbal with dedicated heated delivery bags.'),
               ],
             ),
           ),
@@ -1138,12 +1262,176 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
     );
   }
 
+  Widget _buildFaqItem(String question, String answer) {
+    return ExpansionTile(
+      tilePadding: EdgeInsets.zero,
+      title: Text(question, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.surface900)),
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(answer, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.surface600, height: 1.4)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAccountTab(BuildContext context, AppState state) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Profile Header Card
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColors.surface200),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: const BoxDecoration(
+                    color: AppColors.brand700,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Center(
+                    child: Text('ZA', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18)),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text('Zaid Ahmed', style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.surface900)),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(6)),
+                            child: const Text('Gold Member', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Color(0xFF92400E))),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text('0300-8291042 • DHA Phase 5', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.surface500)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Direct Savings Summary Card
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0xFFECFDF5),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.emerald500.withOpacity(0.3)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('TOTAL DIRECT SAVINGS', style: GoogleFonts.jetBrainsMono(fontSize: 10, fontWeight: FontWeight.w800, color: const Color(0xFF065F46))),
+                    const SizedBox(height: 2),
+                    Text('PKR 4,200', style: GoogleFonts.jetBrainsMono(fontSize: 20, fontWeight: FontWeight.w900, color: const Color(0xFF064E3B))),
+                    Text('Saved vs 30% aggregator platform commissions', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: const Color(0xFF047857))),
+                  ],
+                ),
+                const Icon(Icons.savings_rounded, color: AppColors.emerald600, size: 36),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Switch Ecosystem Apps (Kitchen KDS, Rider Fleet, Owner OS)
+          Text('Switch Restaurant Application', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.surface900)),
+          const SizedBox(height: 8),
+          _buildRoleCard(
+            title: '📟 Kitchen KDS Tablet',
+            subtitle: 'Real-time kitchen order queue, station filter & thermal KOT',
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const KdsTabletAppScreen())),
+          ),
+          _buildRoleCard(
+            title: '🛵 Rider Courier Fleet',
+            subtitle: 'Delivery runs, turn-by-turn map guidance & COD cash bag ledger',
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RiderFleetAppScreen())),
+          ),
+          _buildRoleCard(
+            title: '📊 Merchant Owner OS',
+            subtitle: 'Live sales analytics, commission savings tracker & menu controls',
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OwnerOsAppScreen())),
+          ),
+          const SizedBox(height: 20),
+
+          // Settings
+          Text('Preferences & Localization', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.surface900)),
+          const SizedBox(height: 8),
+          ListTile(
+            tileColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: const BorderSide(color: Color(0xFFE5E7EB))),
+            leading: const Icon(Icons.language_rounded, color: AppColors.brand700),
+            title: Text('Language: ${state.isUrdu() ? 'اردو (Urdu)' : 'English'}', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700)),
+            subtitle: Text(state.isUrdu() ? 'نستعلیق رسم الخط فعال ہے' : 'Switch to Urdu Nastaliq mode', style: GoogleFonts.plusJakartaSans(fontSize: 11)),
+            trailing: Switch(
+              value: state.isUrdu(),
+              activeColor: AppColors.brand700,
+              onChanged: (_) => state.toggleLanguage(),
+            ),
+          ),
+          const SizedBox(height: 8),
+          ListTile(
+            tileColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: const BorderSide(color: Color(0xFFE5E7EB))),
+            leading: const Icon(Icons.storefront_rounded, color: AppColors.brand700),
+            title: Text('Active Branch: ${state.currentBranch.name}', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700)),
+            subtitle: Text('${state.currentBranch.area} • Fee: PKR ${state.currentBranch.deliveryFee}', style: GoogleFonts.plusJakartaSans(fontSize: 11)),
+            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+            onTap: () => _showBranchSelector(context, state),
+          ),
+          const SizedBox(height: 24),
+          Center(
+            child: Text('KRAVE Commerce OS • v1.0.4 Production', style: GoogleFonts.jetBrainsMono(fontSize: 11, color: AppColors.surface400)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoleCard({required String title, required String subtitle, required VoidCallback onTap}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        tileColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: const BorderSide(color: Color(0xFFE5E7EB))),
+        title: Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.surface900)),
+        subtitle: Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 10.5, color: AppColors.surface500)),
+        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.surface400),
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onTap();
+        },
+      ),
+    );
+  }
+
   Widget _buildBrandedBottomNav(BuildContext context) {
     final navItems = [
-      {'icon': Icons.restaurant_menu, 'label': 'Menu'},
-      {'icon': Icons.wallet_giftcard, 'label': 'Rewards'},
-      {'icon': Icons.navigation, 'label': 'Track'},
-      {'icon': Icons.support_agent, 'label': 'WhatsApp'},
+      {'icon': Icons.lunch_dining_rounded, 'label': 'Menu'},
+      {'icon': Icons.military_tech_rounded, 'label': 'Rewards'},
+      {'icon': Icons.delivery_dining_rounded, 'label': 'Track'},
+      {'icon': Icons.chat_bubble_rounded, 'label': 'WhatsApp'},
+      {'icon': Icons.person_rounded, 'label': 'Account'},
     ];
 
     return Container(
@@ -1162,10 +1450,13 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
             children: List.generate(navItems.length, (idx) {
               final isSelected = _currentTabIndex == idx;
               return InkWell(
-                onTap: () => setState(() => _currentTabIndex = idx),
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _currentTabIndex = idx);
+                },
                 borderRadius: BorderRadius.circular(12),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -1190,6 +1481,15 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
             }),
           ),
         ),
+      ),
+    );
+  }
+
+  void _openProductDetail(BuildContext context, MenuItem item) {
+    HapticFeedback.lightImpact();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ProductDetailPage(item: item),
       ),
     );
   }
@@ -1508,11 +1808,12 @@ class _TrayDrawerSheet extends StatelessWidget {
                             paymentMethod: 'COD',
                           );
                           Navigator.of(context).pop();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: AppColors.emerald600,
-                              content: Text('Order #$orderId placed successfully! 5% Direct Cashback credited.'),
-                            ),
+                          KraveToast.show(
+                            context,
+                            title: 'Order Placed! 🎉',
+                            message: 'Order #$orderId sent to kitchen! 5% Direct Cashback credited.',
+                            type: ToastType.cashback,
+                            duration: const Duration(seconds: 4),
                           );
                         },
                   child: const Text('Authorize & Place Direct Order', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.white)),

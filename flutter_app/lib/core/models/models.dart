@@ -22,6 +22,10 @@ class MenuItem {
   final bool isSpicy;
   final List<String> availableSauces;
   final List<ModifierOption> addons;
+  final int calories;
+  final int proteinGrams;
+  final String prepTime;
+  final int savingsVsAggregator;
 
   MenuItem({
     required this.id,
@@ -39,6 +43,10 @@ class MenuItem {
     required this.isSpicy,
     required this.availableSauces,
     required this.addons,
+    this.calories = 650,
+    this.proteinGrams = 38,
+    this.prepTime = '12-15m',
+    this.savingsVsAggregator = 350,
   });
 }
 

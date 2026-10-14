@@ -48,7 +48,7 @@ jobs:
       - name: ⚙️ Verify Flutter Environment
         run: flutter doctor -v
 
-      - name: 🛠️ Initialize Android Platform Files & Permissions
+      - name: 🛠️ Initialize Android Platform Files, App Name & Icons
         working-directory: ./flutter_app
         run: |
           echo "Generating Android scaffold..."
@@ -59,10 +59,13 @@ jobs:
               c = f.read()
           if 'android.permission.INTERNET' not in c:
               c = c.replace('<application', '<uses-permission android:name=\"android.permission.INTERNET\"/>\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>\n    <application')
-              with open(p, 'w') as f:
-                  f.write(c)
-              print('Successfully injected INTERNET and ACCESS_NETWORK_STATE permissions into AndroidManifest.xml')
+          c = c.replace('android:label=\"flutter_app\"', 'android:label=\"KRAVE Burgers\"')
+          with open(p, 'w') as f:
+              f.write(c)
+          print('Successfully updated AndroidManifest with KRAVE Burgers label & Internet permissions.')
           "
+          pip install Pillow
+          python3 scripts/generate_icons.py
 
       - name: 📦 Install Flutter Dependencies
         working-directory: ./flutter_app
