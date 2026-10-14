@@ -1109,7 +1109,7 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
                                 TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Keep Order')),
                                 TextButton(
                                   onPressed: () {
-                                    state.updateOrderStatus(activeOrder.id, OrderStatus.rejected, rejectionReason: 'Cancelled by customer');
+                                    state.cancelOrder(activeOrder.id, 'Cancelled by customer');
                                     Navigator.of(ctx).pop();
                                     KraveToast.show(context, message: 'Order #${activeOrder.id} cancelled successfully.', type: ToastType.warning);
                                   },
@@ -1360,17 +1360,17 @@ class _CustomerAppScreenState extends State<CustomerAppScreen> {
           _buildRoleCard(
             title: '📟 Kitchen KDS Tablet',
             subtitle: 'Real-time kitchen order queue, station filter & thermal KOT',
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const KdsTabletAppScreen())),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const KdsAppScreen())),
           ),
           _buildRoleCard(
             title: '🛵 Rider Courier Fleet',
             subtitle: 'Delivery runs, turn-by-turn map guidance & COD cash bag ledger',
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RiderFleetAppScreen())),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RiderAppScreen())),
           ),
           _buildRoleCard(
             title: '📊 Merchant Owner OS',
             subtitle: 'Live sales analytics, commission savings tracker & menu controls',
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OwnerOsAppScreen())),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OwnerAppScreen())),
           ),
           const SizedBox(height: 20),
 

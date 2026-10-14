@@ -304,7 +304,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   colors: [
                     Colors.black45,
                     Colors.transparent,
-                    Colors.black68,
+                    Colors.black54,
                   ],
                 ),
               ),
